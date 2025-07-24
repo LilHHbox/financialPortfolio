@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import InvestmentCard from "./InvestmentCard";
 import NetWorthChart from "./NetWorthChart";
+import ComboCard from "./ComboCard";
 // import CashFlowChart from "./CashFlowChart";
 
 function Dashboard() {
@@ -42,6 +43,7 @@ function Dashboard() {
           {/* Net Worth Chart */}
           <NetWorthChart investment={selectedInvestment}/>
 
+          <ComboCard investments={investment} />
           {/* Cash Flow Chart */}
           {/* <CashFlowChart /> */}
         </div>

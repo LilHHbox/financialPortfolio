@@ -44,7 +44,7 @@ function NetWorthChart({ investment }) {
   return (
     <div className="bg-neutral-800 p-6 rounded-lg shadow-md">
       <h3 className="text-heading-2 text-brand-primary mb-4">
-        {investment ? `Net Worth - ${investment.name}` : "Net Worth Last Week"}
+        {investment ? `Trend Chart - ${investment.name}` : "Net Worth Last Week"}
       </h3>
       <Line data={data} options={{ responsive: true }} />
     </div>
