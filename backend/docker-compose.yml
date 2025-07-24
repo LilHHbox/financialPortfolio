@@ -1,0 +1,20 @@
+version: "3.9"
+services:
+  db:
+    image: mysql:8.4           # 稳定版，想用 9.1 改成 mysql:9.1.0
+    container_name: financialproject-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: projectdb   # 启动时自动建库
+      MYSQL_USER: dev
+      MYSQL_PASSWORD: devpass
+    ports:
+      - "13306:3306"
+    volumes:
+      - mysql_proj_data:/var/lib/mysql
+      - ./sql:/docker-entrypoint-initdb.d
+
+
+volumes:
+  mysql_proj_data:
