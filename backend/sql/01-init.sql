@@ -12,3 +12,15 @@ CREATE TABLE `stock_price` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_code_time` (`code`,`ts`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2001 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- projectdb.portfolio definition
+
+CREATE TABLE `portfolio` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `details` json DEFAULT NULL,
+  `expected_return` float DEFAULT NULL,
+  `expected_volatility` float DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

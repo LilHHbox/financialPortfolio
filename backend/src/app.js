@@ -1,7 +1,7 @@
 const express = require('express');
 require('dotenv').config();
 const stockRoutes=require('./routes/stockRoutes');
-
+const cors = require('cors');
 
 // Importing the cron package to schedule tasks
 const cron = require('node-cron');          
@@ -13,7 +13,7 @@ const fetchAndSave = require('./jobs/fetchPrice');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/api/stocks',stockRoutes);
