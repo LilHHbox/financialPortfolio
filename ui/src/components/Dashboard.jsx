@@ -26,7 +26,6 @@ function Dashboard() {
     setSelectedInvestment(investment);
   };
 
-
   return (
     <div className="p-6 bg-neutral-900 text-default-font">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

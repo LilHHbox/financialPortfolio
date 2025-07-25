@@ -1,27 +1,39 @@
 import React, { useState } from "react";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import chartAnnotation from "chartjs-plugin-annotation";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 
-// 注册 Chart.js 插件
-ChartJS.register(ArcElement, Tooltip, Legend);
+// Register the necessary Chart.js plugins
+ChartJS.register(ArcElement, Tooltip, Legend, chartAnnotation, ChartDataLabels);
 
 const ComboCard = ({ investments }) => {
-  const [isOpen, setIsOpen] = useState(false); // 控制下拉框显示
+  const [isOpen, setIsOpen] = useState(false);
   const [selectedInvestments, setSelectedInvestments] = useState([]);
-  const [investmentColors, setInvestmentColors] = useState({}); // 用于缓存颜色
+  const [investmentColors, setInvestmentColors] = useState({});
+  const [investmentPercentages, setInvestmentPercentages] = useState({});
 
-  // 切换下拉框的显示状态
+  // Toggle Dropdown
   const toggleDropdown = () => setIsOpen(!isOpen);
 
-  // 处理选项的选择和取消选择
+  // Handle Investment Selection
   const handleSelection = (investment) => {
     setSelectedInvestments((prevSelected) =>
       prevSelected.includes(investment)
-        ? prevSelected.filter((item) => item !== investment) // 如果已选择，取消选择
-        : [...prevSelected, investment] // 否则，添加到选中数组
+        ? prevSelected.filter((item) => item !== investment)
+        : [...prevSelected, investment]
     );
   };
 
+  // Handle Percentage Change
+  const handlePercentageChange = (investment, percentage) => {
+    setInvestmentPercentages((prev) => ({
+      ...prev,
+      [investment]: percentage,
+    }));
+  };
+
+  // Generate Random Colors
   const generateRandomColor = () => {
     const letters = '0123456789ABCDEF';
     let color = '#';
@@ -31,12 +43,12 @@ const ComboCard = ({ investments }) => {
     return color;
   };
 
-  // 缓存投资颜色
+  // Get or generate random colors for investments
   const getInvestmentColor = (investment) => {
     if (investmentColors[investment]) {
-      return investmentColors[investment]; // 如果已有颜色则返回
+      return investmentColors[investment];
     }
-    const color = generateRandomColor(); // 如果没有颜色，生成一个新的颜色
+    const color = generateRandomColor();
     setInvestmentColors((prevColors) => ({
       ...prevColors,
       [investment]: color,
@@ -44,15 +56,16 @@ const ComboCard = ({ investments }) => {
     return color;
   };
 
-  // 计算饼图数据
+  // Calculate Pie Data
   const calculatePieData = () => {
     const totalInvestments = selectedInvestments.length;
     if (totalInvestments <= 1) return null;
 
-    // 平均分配投资
-    const pieData = Array(totalInvestments).fill(100 / totalInvestments);
-    const labels = selectedInvestments;
+    const pieData = selectedInvestments.map((investment) => {
+      return investmentPercentages[investment] || 100 / totalInvestments;
+    });
 
+    const labels = selectedInvestments;
     const backgroundColors = selectedInvestments.map(getInvestmentColor);
 
     return {
@@ -60,72 +73,121 @@ const ComboCard = ({ investments }) => {
       datasets: [
         {
           data: pieData,
-          backgroundColor: backgroundColors, // 每个部分的颜色
+          backgroundColor: backgroundColors,
           hoverOffset: 4,
         },
       ],
     };
   };
 
+  // Pie Chart Options with Annotation and Data Labels
   const pieData = calculatePieData();
+  const options = {
+    responsive: true,
+    plugins: {
+      datalabels: {
+        display: false,
+        formatter: (value, context) => `${context.chart.data.labels[context.dataIndex]}: ${value}%`,
+        color: '#fff',
+      },
+      annotation: {
+        annotations: selectedInvestments.map((investment, index) => ({
+          type: 'box',
+          xMin: index - 0.4,
+          xMax: index + 0.4,
+          backgroundColor: getInvestmentColor(investment),
+          borderWidth: 2,
+          borderColor: '#fff',
+          label: {
+            content: `${investmentPercentages[investment] || 100 / selectedInvestments.length}%`,
+            position: 'center',
+            font: { size: 16 },
+          },
+        })),
+      },
+    },
+    onClick: (event, chartElement) => {
+      if (chartElement.length > 0) {
+        const { index } = chartElement[0];
+        const investment = selectedInvestments[index];
+        const currentPercentage = investmentPercentages[investment] || 100 / selectedInvestments.length;
+        const newPercentage = prompt("Enter new percentage", currentPercentage);
+
+        if (newPercentage && !isNaN(newPercentage)) {
+          const updatedPercentages = { ...investmentPercentages, [investment]: parseFloat(newPercentage) };
+          setInvestmentPercentages(updatedPercentages);
+        }
+      }
+    },
+  };
 
   return (
     <div className="bg-neutral-800 rounded-lg shadow-md p-6 flex flex-row">
       <div className="w-1/2">
-        <h3 className="text-heading-2 text-brand-primary mb-4">Choose Your Portfolio</h3>
-
+        <h3 className="text-heading-2 font-semibold text-brand-primary mb-4">Choose Your Portfolio</h3>
         <div className="relative">
-          {/* 模拟的选择框 */}
+          {/* Dropdown */}
           <div
             id="investmentSelect"
             onClick={toggleDropdown}
-            className="bg-neutral-700 text-neutral-100 rounded-md p-2 mt-2 w-4/5 flex justify-between items-center cursor-pointer"
+            className="bg-neutral-700 text-neutral-100 rounded-md p-3 mt-2 w-full flex justify-between items-center cursor-pointer text-body-bold font-medium"
           >
             <span>{selectedInvestments.length > 0 ? `${selectedInvestments.length} selected` : "Choose Investments"}</span>
-            {/* 向下箭头 */}
-            <span className="ml-2">{isOpen ? "▲" : "▼"}</span>
+            <span className="ml-2 text-body-bold">{isOpen ? "▲" : "▼"}</span>
           </div>
 
-          {/* 下拉框 */}
+          {/* Dropdown List */}
           {isOpen && (
-            <div className="absolute bg-neutral-700 text-neutral-100 rounded-md w-4/5 mt-1 max-h-60 overflow-y-auto z-10">
+            <div className="absolute bg-neutral-700 text-neutral-100 rounded-md w-full mt-2 max-h-60 overflow-y-auto z-10 shadow-lg">
               {investments.map((investment, index) => (
                 <div
                   key={index}
                   onClick={() => handleSelection(investment.name)}
-                  className="flex items-center p-2 hover:bg-brand-600 cursor-pointer"
+                  className="flex items-center p-3 hover:bg-brand-600 cursor-pointer transition-all"
                 >
                   <input
                     type="checkbox"
                     checked={selectedInvestments.includes(investment.name)}
                     readOnly
-                    className="mr-2"
+                    className="mr-3"
                   />
                   <span>{investment.name}</span>
                 </div>
               ))}
             </div>
           )}
-        
-          {/* 显示已选择的投资 */}
-          {selectedInvestments.length > 0 && (
-            <div className="mt-4">
-              <p className="text-body-bold text-neutral-300">You have selected:</p>
-              <ul className="list-disc pl-6 text-neutral-300">
-                {selectedInvestments.map((investment, index) => (
-                  <li key={index} className="text-brand-primary">{investment}</li>
-                ))}
-              </ul>
-            </div>
-          )}
         </div>
+
+        {/* Display selected investments with percentage */}
+        {selectedInvestments.length > 0 && (
+          <div className="mt-6">
+            <p className="text-heading-3 font-semibold text-neutral-300">You have selected:</p>
+            <ul className="list-none pl-0">
+              {selectedInvestments.map((investment, index) => (
+                <li key={index} className="text-body text-neutral-200 flex justify-between items-center mt-3">
+                  <span className="text-brand-primary">{investment}</span>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="number"
+                      value={investmentPercentages[investment] || 100 / selectedInvestments.length}
+                      onChange={(e) => handlePercentageChange(investment, Number(e.target.value))}
+                      className="w-20 p-2 text-center bg-neutral-600 text-neutral-100 rounded-md"
+                      min={0}
+                      max={100}
+                    />
+                    <span className="text-neutral-400">%</span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
-      
 
       {pieData && (
         <div className="mt-8 w-1/2">
           <p className="text-heading-3 text-neutral-100 mb-2 text-center">Portfolio Distribution</p>
-          <Doughnut data={pieData} options={{ responsive: true }} />
+          <Doughnut data={pieData} options={options} />
         </div>
       )}
     </div>
