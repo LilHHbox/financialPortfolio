@@ -13,7 +13,7 @@ class StockModel {
     static async getStockDataFromSource(code, date) {
         //check if code is in the code list
         if (!validCodes.includes(code)) {
-            throw new Error(`Invalid stock code: ${code}`);
+            return null;
         } else {
             const [rows] = await db.query(
                 `SELECT ts AS datetime, open, high, low, close, volume
@@ -32,7 +32,7 @@ class StockModel {
     static async getStockDataFromLatest(code) {
         //check if code is in the code list
         if (!validCodes.includes(code)) {
-            throw new Error(`Invalid stock code: ${code}`);
+            return null;
         } else {
             const [rows] = await db.query(
                 `SELECT ts AS datetime, open, high, low, close, volume
