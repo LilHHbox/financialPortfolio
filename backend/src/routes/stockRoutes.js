@@ -6,7 +6,7 @@ const stockController = require('../controllers/stockController');
  * @swagger
  * /getStockInfoList/{stockCode}:
  *   get:
- *     summary: 获取股票日内五分钟分数据
+ *     summary: 获取该只股票每五分钟相关数据
  *     description: 根据股票代码,返回当天每隔五分钟的股价记录
  *     parameters:
  *       - in: path
