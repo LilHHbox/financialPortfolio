@@ -66,6 +66,50 @@ const stockController = require('../controllers/stockController');
  */
 router.get('/getStockInfoList/:stockCode', stockController.getStockData);
 
+/**
+ * @swagger
+ * /api/stocks/getAllStockInfo:
+ *   get:
+ *     summary: Get all stock information for the latest trading day
+ *     description: Returns stock information for all stocks from the most recent working day, including stock code, Chinese name, and opening price
+ *     tags:
+ *       - Stock Information
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved all latest stock information
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   stockcode:
+ *                     type: string
+ *                     description: Stock code identifier
+ *                     example: "600000"
+ *                   chineseName:
+ *                     type: string
+ *                     description: Chinese name of the stock
+ *                     example: "浦发银行"
+ *                   openPrice:
+ *                     type: number
+ *                     format: float
+ *                     description: Opening price from the latest trading day
+ *                     example: 8.56
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Error message
+ *                   example: "Failed to retrieve stock information"
+ */
+router.get('/getAllStockInfo', stockController.getAllStockInfo);
 
 /**
  * @swagger
@@ -156,5 +200,8 @@ router.get('/getStockInfoList/:stockCode', stockController.getStockData);
  *                   example: "Failed to process portfolio: database connection error"
  */
 router.post('/createProfolio', stockController.createProfolio);
+
+
+
 
 module.exports = router;

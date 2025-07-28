@@ -1,9 +1,10 @@
+
+
+
 const stockModel=require('../models/stockModel');
 
 // Fetch stock data for a specific stock code
 exports.fetchStockData = async (stockCode) => {
-
-
 
     
     const today = new Date().toISOString().slice(0, 10);
@@ -90,5 +91,13 @@ exports.calRewardAndRisk = async (stocks) => {
         reward: parseFloat(totalReward.toFixed(6)),  // 保留6位小数
         risk: parseFloat(totalRisk.toFixed(6))       // 保留6位小数
     };
+
+}
+
+exports.fetchAllStockData =async(timeStep)=>{
+    
+
+        const result=await stockModel.getAllStockData(timeStep);
+        return result;
 
 }
