@@ -1,5 +1,16 @@
 const portfolioService = require('../services/portfolioService');
 
+//get all portfolios
+const getAllPortfolios = async (req, res) => {
+    try {
+        const portfolios = await portfolioService.getAllPortfolios();
+        res.status(200).json(portfolios);
+    } catch (error) {
+        console.error('获取投资组合失败：', error);
+        res.status(500).json({ message: '服务器内部错误' });
+    }
+};
+
 const deletePortfolio = async (req, res) => {
     try {
         // 从请求参数中获取ID
@@ -55,6 +66,7 @@ const updatePortfolio = async (req, res) => {
 
 
 module.exports = {
+    getAllPortfolios,
     deletePortfolio,
     updatePortfolio
 };
