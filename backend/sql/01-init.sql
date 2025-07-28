@@ -17,7 +17,7 @@ CREATE TABLE `stock_price` (
 
 CREATE TABLE `portfolio` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `details` json DEFAULT NULL,
+  `details` json DEFAULT NULL, COMMENT '包括stockcode 和 ratio'
   `expected_return` float DEFAULT NULL,
   `expected_volatility` float DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,

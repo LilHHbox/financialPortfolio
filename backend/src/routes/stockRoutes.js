@@ -4,20 +4,23 @@ const stockController = require('../controllers/stockController');
 
 /**
  * @swagger
- * /getStockInfoList/{stockCode}:
+ * /api/stocks/getStockInfoList/{stockCode}:
  *   get:
- *     summary: 获取该只股票每五分钟相关数据
- *     description: 根据股票代码,返回当天每隔五分钟的股价记录
+ *     summary: Fetch stock data at 5-minute intervals
+ *     description: Returns intraday stock price records at 5-minute intervals for the specified stock code, including open, high, close prices and trading volume
+ *     tags: 
+ *       - Stock Data
  *     parameters:
  *       - in: path
  *         name: stockCode
  *         required: true
  *         schema:
  *           type: string
- *         description: 股票代码
+ *           example: "sg091082"
+ *         description: Unique stock identifier (e.g., sg091082)
  *     responses:
  *       200:
- *         description: 成功返回,股票区分钟的列表
+ *         description: Successful retrieval of stock data
  *         content:
  *           application/json:
  *             schema:
@@ -26,6 +29,7 @@ const stockController = require('../controllers/stockController');
  *                 code:
  *                   type: integer
  *                   example: 200
+ *                   description: Status code indicating success
  *                 data:
  *                   type: array
  *                   items:
@@ -33,25 +37,124 @@ const stockController = require('../controllers/stockController');
  *                     properties:
  *                       time:
  *                         type: string
+ *                         format: date-time
  *                         example: "2025-07-26 09:35:00"
+ *                         description: End time of the 5-minute interval
  *                       open:
  *                         type: number
+ *                         format: float
  *                         example: 284.17
+ *                         description: Opening price of the interval
  *                       high:
  *                         type: number
+ *                         format: float
  *                         example: 285.10
+ *                         description: Highest price in the interval
  *                       close:
  *                         type: number
+ *                         format: float
  *                         example: 283.05
+ *                         description: Closing price of the interval
  *                       volume:
- *                         type: number
+ *                         type: integer
  *                         example: 342342
+ *                         description: Trading volume in the interval (shares)
  *       400:
- *         description: 股票代码无效
+ *         description: Invalid stock code format
  *       404:
- *         description: 未找到该股票数据
+ *         description: No stock data found for the given code
  */
 router.get('/getStockInfoList/:stockCode', stockController.getStockData);
-router.post('/calReward', stockController.calReward);
+
+
+/**
+ * @swagger
+ * /api/stocks/createProfolio:
+ *   post:
+ *     summary: Calculate portfolio returns and risk, then store results
+ *     description: Computes portfolio expected return and risk metrics using input stock codes and their weight ratios, then persists the results to database
+ *     tags:
+ *       - Portfolio Analysis
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - stocks
+ *             properties:
+ *               stocks:
+ *                 type: array
+ *                 description: Array of stock allocations with codes and weight ratios
+ *                 items:
+ *                   type: object
+ *                   required:
+ *                     - stockCode
+ *                     - ratio
+ *                   properties:
+ *                     stockCode:
+ *                       type: string
+ *                       description: Unique stock identifier
+ *                       example: "600036"
+ *                     ratio:
+ *                       type: number
+ *                       format: float
+ *                       description: Weight ratio of the stock in portfolio (0-1)
+ *                       example: 0.3
+ *     responses:
+ *       200:
+ *         description: Successful calculation and storage
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 portfolioId:
+ *                   type: number
+ *                   description: Unique identifier of the created portfolio
+ *                   example: 123
+ *                 reward:
+ *                   type: number
+ *                   format: float
+ *                   description: Expected return rate of the portfolio
+ *                   example: 0.052367
+ *                 risk:
+ *                   type: number
+ *                   format: float
+ *                   description: Risk rate (volatility) of the portfolio
+ *                   example: 0.021543
+ *       400:
+ *         description: Invalid input data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Invalid stock allocation - please provide valid codes and ratios (0-1 range)"
+ *       404:
+ *         description: Stock data not found for one or more codes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Stock data not found for: 600036"
+ *       500:
+ *         description: Server error during calculation or storage
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Failed to process portfolio: database connection error"
+ */
+router.post('/createProfolio', stockController.createProfolio);
 
 module.exports = router;

@@ -1,5 +1,6 @@
-const express = require('express');
 require('dotenv').config();
+const express = require('express');
+
 const stockRoutes=require('./routes/stockRoutes');
 const portfolioRoutes=require('./routes/portfolioRoutes');
 const cors = require('cors');
