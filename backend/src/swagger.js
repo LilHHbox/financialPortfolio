@@ -5,9 +5,9 @@ const swaggerOptions = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: '股票API文档',
+      title: 'Financial Portfolio Management API',
       version: '1.0.0',
-      description: "获取股票五分钟数据的接口文档"
+      description: "this is the API documentation for the financial portfolio management system",
     },
     servers: [
       {
@@ -15,7 +15,7 @@ const swaggerOptions = {
       }
     ],
   },
-  apis: ['./routes/*.js']  // 确保路径正确
+  apis: ['./src/routes/*.js']  // 确保路径正确
 };
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);

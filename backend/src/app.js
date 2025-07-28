@@ -19,7 +19,6 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/api/stocks',stockRoutes);
-//用资源复数形式（portfolios）表示资源集合
 app.use('/api/portfolios',portfolioRoutes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
