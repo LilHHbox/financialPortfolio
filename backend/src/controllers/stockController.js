@@ -1,28 +1,40 @@
 const stockService=require('../services/stockService');
 
-//控制层函数，，处理“获取股票十天数据”的请求
+//控制层函数，，处理“获取股票数据”的请求
 exports.getStockData=async(req,res)=>{
-    try{
+    // try{
         //从请求菜属中获取股票代码stockCode
         const stockCode=req.params.stockCode;
+        const stockCodeRegex = /^[a-z]{2}\d{6}$/;
+        if (!stockCodeRegex.test(stockCode)) {
+            return res.status(400).json({
+                success: false,
+                message: '股票代码无效，需为两位小写字母加6个数字格式'
+            });
+        }
  
         //调用Service层的业务逻辑，传入股票代码，获取数据
         const data=await stockService.fetchStockData(stockCode);
-
+        if (!data) { 
+            return res.status(404).json({
+                success: false,
+                message: '未找到该股票数据'
+            });
+        }
         res.status(200).json({
             success:true,
             data:data,
             message:'股票数据获取成功'
         });
 
-    }catch(error){
+    // }catch(error){
         
-            res.status(500).json({
-            success:false,
+    //         res.status(500).json({
+    //         success:false,
         
-            message:'股票数据获取失败'
-        });
-    }
+    //         message:'股票数据获取失败'
+    //     });
+    // }
 };
 exports.calReward=async(req,res)=>{
     try{
