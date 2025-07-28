@@ -1,4 +1,4 @@
 backend/node_modules/
 candle.html
 .DS_Store
-package-lock.json
+backend/.env

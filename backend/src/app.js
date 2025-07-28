@@ -1,7 +1,8 @@
 const express = require('express');
 require('dotenv').config();
 const stockRoutes=require('./routes/stockRoutes');
-
+const portfolioRoutes=require('./routes/portfolioRoutes');
+const cors = require('cors');
 
 // Importing the cron package to schedule tasks
 const cron = require('node-cron');          
@@ -9,14 +10,17 @@ const cron = require('node-cron');
 const bodyParser = require('body-parser');
 const fetchAndSave = require('./jobs/fetchPrice'); 
 
-
+const { swaggerDocs, swaggerUi } = require('./swagger'); // 引入Swagger配置
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/api/stocks',stockRoutes);
+//用资源复数形式（portfolios）表示资源集合
+app.use('/api/portfolios',portfolioRoutes);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 
 // Schedule a cron job to run every 5 minutes from 9 AM to 3 PM, Monday to Friday

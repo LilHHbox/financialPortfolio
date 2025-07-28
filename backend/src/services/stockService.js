@@ -2,6 +2,10 @@ const stockModel=require('../models/stockModel');
 
 // Fetch stock data for a specific stock code
 exports.fetchStockData = async (stockCode) => {
+
+
+
+    
     const today = new Date().toISOString().slice(0, 10);
     // get the stock data for today
     let data = await stockModel.getStockDataFromSource(stockCode, today);
