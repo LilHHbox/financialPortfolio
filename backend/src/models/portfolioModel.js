@@ -7,4 +7,17 @@ const deletePortfolioById = async (id) => {
 };  
 
 
-module.exports = {deletePortfolioById};
+const updatePortfolioById = async (id, details, expectedReturn, expectedVolatility) => {
+    const sql = 'UPDATE portfolio SET details = ?, expected_return = ?, expected_volatility = ?, updated_at = CURRENT_TIMESTAMP  WHERE id = ?';
+    // 将details对象转化为json字符串（因为数据库中details是一个json类型）
+    const [result] =await pool.query(
+        sql, [JSON.stringify(details), expectedReturn, expectedVolatility, id]
+    );
+    return result.affectedRows === 1; // 返回是否更新成功
+};
+
+
+module.exports = {
+    deletePortfolioById,
+    updatePortfolioById
+};

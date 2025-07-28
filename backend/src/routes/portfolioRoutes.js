@@ -5,5 +5,6 @@ const portfolioController = require('../controllers/portfolioController'); // �
 
 // 定义删除投资组合的路由
 router.delete('/:id', portfolioController.deletePortfolio);
-
+// 定义更新投资组合的路由
+router.put('/:id', portfolioController.updatePortfolio);
 module.exports = router; // 导出路由，供 app.js 挂载使用

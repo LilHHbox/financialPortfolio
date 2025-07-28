@@ -14,4 +14,57 @@ const deletePortfolioById = async (id) => {
     return affectedRows === 1;
 };
 
-module.exports = { deletePortfolioById };
+// 计算预期收益率
+// 简化的收益计算：所有股票比例之和
+const calculateExpectedReturn = (stocks) => {
+  return stocks.reduce((sum, stock) => sum + stock.ratio, 0);
+};
+
+//简化的风险计算：所有股票比例的乘积
+const calculateExpectedVolatility = (stocks) => {
+  return stocks.reduce((product, stock) => product * stock.ratio, 1);
+};
+
+const updatePortfolio = async (id, details) => {
+  // 1. 参数校验
+  if (typeof id !== 'number' || Number.isNaN(id) || id <= 0 || !Number.isInteger(id)) {
+    throw new Error('无效的portfolio ID（必须是正整数）');
+  }
+  if (!details || !details.stocks || !Array.isArray(details.stocks) || details.stocks.length === 0) {
+    throw new Error('details必须包含非空的stocks数组');
+  }
+  // 校验每个股票是否包含code和ratio
+  details.stocks.forEach((stock, index) => {
+    if (!stock.code || typeof stock.ratio !== 'number' || stock.ratio <= 0) {
+      throw new Error(`第${index+1}只股票格式错误（需包含code和正数ratio）`);
+    }
+  });
+
+  // 2. 计算预期收益和风险
+  const expectedReturn = calculateExpectedReturn(details.stocks);
+  const expectedVolatility = calculateExpectedVolatility(details.stocks);
+
+  // 3. 调用模型层更新数据库
+  const isUpdated = await portfoliosModel.updatePortfolioById(
+    id,
+    details,
+    expectedReturn,
+    expectedVolatility
+  );
+
+  if (!isUpdated) {
+    throw new Error('更新失败,可能ID不存在');
+  }
+
+  // 4. 返回计算结果
+  return {
+    expected_return: parseFloat(expectedReturn.toFixed(4)), // 保留4位小数
+    expected_volatility: parseFloat(expectedVolatility.toFixed(4))
+  };
+};
+
+
+module.exports = { 
+    deletePortfolioById,
+    updatePortfolio
+};
