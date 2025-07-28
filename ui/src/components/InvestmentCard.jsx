@@ -1,7 +1,7 @@
 function InvestmentCard({ invest, onClick }) {
   return (
     <div
-      className="bg-neutral-700 p-4 mb-4 rounded-md shadow-md flex flex-row justify-between cursor-pointer"
+      className="bg-neutral-800 p-4 mb-2 rounded-md shadow-md flex flex-row justify-between cursor-pointer"
       onClick={onClick}
     >
       <h3 className="text-body-bold font-semibold text-brand-400">{invest.name}</h3>
