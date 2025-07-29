@@ -66,17 +66,17 @@ const updatePortfolio = async (req, res) => {
     // 1. 获取路径参数id和请求体details
     const { id } = req.params;
     const portfolioId = Number(id);
-    // 从请求体中获取 portfolioName 和 details（新增 portfolioName）
-    const {portfolioName, details} = req.body;
+    
+    const { name, details } = req.body;
 
     // 2. 调用服务层执行更新
-    const result = await portfolioService.updatePortfolio(portfolioId, portfolioName, details);
+    const result = await portfolioService.updatePortfolio(portfolioId, name, details);
 
     // 3. 返回200和计算结果
     res.status(200).json(result);
   } catch (error) {
     // 4. 错误处理
-    if (error.message.includes('Invalid') || error.message.includes('Format error') || error.message.includes('portfolioName')) {
+    if (error.message.includes('Invalid') || error.message.includes('Format error') || error.message.includes('portfolioName') || error.message.includes('array') || error.message.includes('stockCode')) {
       return res.status(400).json({ message: error.message });
     }
     if (error.message.includes('ID does not exist')) {

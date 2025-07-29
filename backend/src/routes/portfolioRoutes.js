@@ -130,77 +130,73 @@ router.delete('/:id', portfolioController.deletePortfolio);
  * /api/portfolios/{id}:
  *   put:
  *     summary: Update a portfolio by ID
- *     description: Update portfolioName, details, and recalculate expected return and volatility for the specified portfolio
- *     tags: 
- *       - Portfolio Analysis    
+ *     description: Update portfolio name and stocks, recalculate return and volatility
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         schema:
- *           type: integer
- *           format: int64
+ *         schema: { type: integer }
  *         description: Portfolio ID (positive integer)
- *     requestBody:
+  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - name
+ *               - details
  *             properties:
- *               portfolioName:
+ *               name:
  *                 type: string
- *                 example: "Tech Leader Portfolio"
- *                 description: Portfolio name (non-empty string, max length 255)
+ *                 description: Name of the portfolio, used to identify and distinguish different portfolios
+ *                 example: "My Growth Portfolio"
+ *                 minLength: 1
+ *                 maxLength: 100
  *               details:
- *                 type: object
- *                 required: true
- *                 properties:
- *                   stocks:
- *                     type: array
- *                     required: true
- *                     minItems: 1
- *                     items:
- *                       type: object
- *                       properties:
- *                         code:
- *                           type: string
- *                           example: "AAPL"
- *                           description: Stock code
- *                         ratio:
- *                           type: number
- *                           format: float
- *                           example: 1
- *                           description: Allocation ratio of the stock in the portfolio (positive number)
+ *                 type: array
+ *                 description: Array of stock codes and their weight ratios, the sum of all weights should equal 1
+ *                 items:
+ *                   type: object
+ *                   required:
+ *                     - stockCode
+ *                     - ratio
+ *                   properties:
+ *                     stockCode:
+ *                       type: string
+ *                       description: Unique identifier of the stock (e.g., stock code)
+ *                       example: "sz000858"
+ *                       minLength: 1
+ *                       maxLength: 20
+ *                     ratio:
+ *                       type: number
+ *                       format: float
+ *                       description: Weight ratio of the stock in the portfolio, ranging from 0 to 1
+ *                       example: 0.3
+ *                       minimum: 0
+ *                       maximum: 1
+ *                 example: [ { "stockCode": "sh600519", "ratio": 0.5 },{ "stockCode": "sz000858", "ratio": 0.5 }]
  *     responses:
  *       200:
- *         description: Portfolio updated successfully, returns recalculated return and volatility
+ *         description: Updated successfully
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 expected_return:
- *                   type: number
- *                   format: float
- *                   example: 1.0
- *                 expected_volatility:
- *                   type: number
- *                   format: float
- *                   example: 0.25
+ *                 expected_return: { type: number, example: 1.0 }
+ *                 expected_volatility: { type: number, example: 0.25 }
  *       400:
- *         description: Invalid parameters (e.g., invalid ID, empty or too long portfolioName, invalid details format)
- *       404:
- *         description: Portfolio with specified ID not found
- *       500:
- *         description: Internal server error
+ *         description: Invalid parameters (e.g., missing name, invalid stock format)
+ *       404: { description: "Portfolio not found" }
+ *       500: { description: "Internal server error" }
  */
 router.put('/:id', portfolioController.updatePortfolio);
 
 
 /**
  * @swagger
- * /api/stocks/createProfolio:
+ * /api/portfolios/createPortfolio:
  *   post:
  *     summary: Calculate portfolio returns and risk, then store results
  *     description: Computes portfolio expected return and risk metrics using input stock codes and their weight ratios, then persists the results to database
