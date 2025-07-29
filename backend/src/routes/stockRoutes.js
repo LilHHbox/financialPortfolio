@@ -9,15 +9,15 @@ const stockController = require('../controllers/stockController');
  *     summary: Fetch stock data at 5-minute intervals
  *     description: Returns intraday stock price records at 5-minute intervals for the specified stock code, including open, high, close prices and trading volume
  *     tags: 
- *       - Stock Data
+ *       - Stock Information
  *     parameters:
  *       - in: path
  *         name: stockCode
  *         required: true
  *         schema:
  *           type: string
- *           example: "sg091082"
- *         description: Unique stock identifier (e.g., sg091082)
+ *           example: "sh600519"
+ *         description: Unique stock identifier (e.g., sh600519)
  *     responses:
  *       200:
  *         description: Successful retrieval of stock data

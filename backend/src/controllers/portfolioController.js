@@ -100,7 +100,7 @@ const validCodes = [
 
 
 
-const createProfolio=async(req,res)=>{
+const createPortfolio=async(req,res)=>{
     try{
         //从请求菜属中获取股票代码stocks
        //stocks示例
@@ -152,7 +152,7 @@ const createProfolio=async(req,res)=>{
 
         //调用Service层的业务逻辑，传入股票代码，获取数据
        
-        const result=await portfolioService.createProfolio(name,stocks);
+        const result=await portfolioService.createPortfolio(name,stocks);
         res.status(200).json({
             success:true,
             message:'收益计算成功',
@@ -178,5 +178,5 @@ module.exports = {
     getPortfolioById,
     deletePortfolio,
     updatePortfolio,
-    createProfolio
+    createPortfolio
 };
