@@ -127,4 +127,123 @@ router.delete('/:id', portfolioController.deletePortfolio);
  *         description: Internal server error
  */
 router.put('/:id', portfolioController.updatePortfolio);
+
+
+/**
+ * @swagger
+ * /api/portfolios/createProfolio:
+ *   post:
+ *     summary: Calculate portfolio returns and risk, then store results
+ *     description: Computes portfolio expected return and risk metrics using input stock codes and their weight ratios, then persists the results to database
+ *     tags:
+ *       - Portfolio Analysis
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - details
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Name of the portfolio, used to identify and distinguish different portfolios
+ *                 example: "My Growth Portfolio"
+ *                 minLength: 1
+ *                 maxLength: 100
+ *               details:
+ *                 type: array
+ *                 description: Array of stock codes and their weight ratios, the sum of all weights should equal 1
+ *                 items:
+ *                   type: object
+ *                   required:
+ *                     - stockCode
+ *                     - ratio
+ *                   properties:
+ *                     stockCode:
+ *                       type: string
+ *                       description: Unique identifier of the stock (e.g., stock code)
+ *                       example: "600036"
+ *                       minLength: 1
+ *                       maxLength: 20
+ *                     ratio:
+ *                       type: number
+ *                       format: float
+ *                       description: Weight ratio of the stock in the portfolio, ranging from 0 to 1
+ *                       example: 0.3
+ *                       minimum: 0
+ *                       maximum: 1
+ *     responses:
+ *       200:
+ *         description: Successful calculation and storage
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 portfolioId:
+ *                   type: number
+ *                   description: Unique identifier of the created portfolio
+ *                   example: 123
+ *                 name:
+ *                   type: string
+ *                   description: Name of the portfolio
+ *                   example: "My Growth Portfolio"
+ *                 reward:
+ *                   type: number
+ *                   format: float
+ *                   description: Expected return rate of the portfolio
+ *                   example: 0.052367
+ *                 risk:
+ *                   type: number
+ *                   format: float
+ *                   description: Risk rate (volatility) of the portfolio
+ *                   example: 0.021543
+ *       400:
+ *         description: Invalid input data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   examples:
+ *                     invalidRatio:
+ *                       value: "Invalid stock allocation - please provide valid codes and ratios (0-1 range)"
+ *                     sumNotOne:
+ *                       value: "Sum of weights must equal 1"
+ *                     missingName:
+ *                       value: "Portfolio name is required"
+ *       404:
+ *         description: Stock data not found for one or more codes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Stock data not found for: 600036, 601318"
+ *       500:
+ *         description: Server error during calculation or storage
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   examples:
+ *                     dbError:
+ *                       value: "Failed to process portfolio: database connection error"
+ *                     calculationError:
+ *                       value: "Failed to process portfolio: error occurred during calculation"
+ */
+
+router.post('/createProfolio', portfolioController.createProfolio);
+
+
 module.exports = router;

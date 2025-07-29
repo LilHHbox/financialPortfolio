@@ -50,77 +50,7 @@ exports.getStockData=async(req,res)=>{
     //     });
     // }
 };
-exports.createProfolio=async(req,res)=>{
-    try{
-        //从请求菜属中获取股票代码stocks
-       //stocks示例
-       //json
-       //{name: dt ;details: [{stock Code：'ASA',RATIO:0.3},{stock Code：'ASA',RATIO:0.3},{stock Code：'ASA',RATIO:0.3}]}
-       const { name, details } = req.body;
-    
-        const stocks=details;
-        const stockCodeRegex = /^[a-z]{2}\d{6}$/;
-        if(stocks==null)
-        {
-            return res.status(400).json({
-                success: false,
-                message: 'Please submit the stock code and corresponding allocation percentage'
-            });
-        }
 
-      
-        stocks.forEach((stock,index) => {
-            const stockCode = stock.stockCode; 
-            if (!stockCodeRegex.test(stockCode)){
-                return res.status(400).json({
-                    success: false,
-                    message: 'Invalid stock code format. Required: 2 lowercase letters followed by 6 digits'
-                });
-            }
-
-
-            
-            if (!validCodes.includes(stockCode)) {
-              
-                return res.status(404).json({
-                    success: false,
-                    message: 'Stock data not found'
-                });
-            }
-
-        });
-      
-     
-        const totalRatio=stocks.reduce((sum,stock)=>sum+stock.ratio,0);
-        if(Math.abs(totalRatio-1)>0.01){
-            return res.status(400).json({
-                success: false,
-                message: 'The sum of stock allocation ratios must equal 1 (100%).'
-            });
-    
-        }
-
-        //调用Service层的业务逻辑，传入股票代码，获取数据
-       
-        const result=await stockService.createProfolio(name,stocks);
-        res.status(200).json({
-            success:true,
-            message:'收益计算成功',
-            data:{portfolioId:result.portfolioId,
-                reward:result.reward,//总收益
-                risk:result.risk}
-        });
-
-
-    }catch(error){
-            console.log(error)
-            res.status(500).json({
-            success:false,
-        
-            message:'计算失败'
-        });
-    }
-};
 exports.getAllStockInfo=async(req,res)=>{
     const today = new Date();
     const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
