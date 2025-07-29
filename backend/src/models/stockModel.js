@@ -8,26 +8,26 @@ const validCodes = [
     'sz002475'
 ];
 const codeNameMap = {
-    'sh600519': '贵州茅台',
-    'sz000858': '五粮液',
-    'sz300750': '宁德时代',
-    'sz002594': '比亚迪',
-    'sh601012': '隆基绿能',
-    'sz002371': '北方华创',
-    'sh688981': '中芯国际',
-    'sh600030': '中信证券',
-    'sh600036': '招商银行',
-    'sh601318': '中国平安',
-    'sh600276': '恒瑞医药',
-    'sz300760': '迈瑞医疗',
-    'sz000333': '美的集团',
-    'sh600588': '用友网络',
-    'sz002415': '海康威视',
-    'sh600031': '三一重工',
-    'sh600900': '长江电力',
-    'sz002352': '顺丰控股',
-    'sh600309': '万华化学',
-    'sz002475': '立讯精密'
+    'sh600519': 'Kweichow Moutai',
+    'sz000858': 'Wuliangye',
+    'sz300750': 'CATL (Contemporary Amperex Technology Co., Limited)',
+    'sz002594': 'BYD (Build Your Dreams)',
+    'sh601012': 'Longi Green Energy Technology',
+    'sz002371': 'Naura Technology Group',
+    'sh688981': 'SMIC (Semiconductor Manufacturing International Corporation)',
+    'sh600030': 'CITIC Securities',
+    'sh600036': 'China Merchants Bank',
+    'sh601318': 'Ping An Insurance (Group) Company of China',
+    'sh600276': 'Hengrui Medicine',
+    'sz300760': 'Mindray Medical International Limited',
+    'sz000333': 'Midea Group',
+    'sh600588': 'Yonyou Network Technology',
+    'sz002415': 'Hikvision Digital Technology',
+    'sh600031': 'Sany Heavy Industry',
+    'sh600900': 'Yangtze Power',
+    'sz002352': 'SF Holding',
+    'sh600309': 'Wanhua Chemical Group',
+    'sz002475': 'Luxshare Precision Industry'
 };
 class StockModel {
     /** 按指定日期查 */

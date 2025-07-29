@@ -6,10 +6,10 @@ const portfolioController = require('../controllers/portfolioController'); // å¼
  * @swagger
  * /api/portfolios:
  *   get:
- *     summary: get all portfolios
+ *     summary: Portfolio Data
  *     description: return a all portfolios with name and id
  *     tags:
- *       - get all portfolios
+ *       - Portfolio Data
  *     responses:
  *       200:
  *         description: success
@@ -40,7 +40,7 @@ router.get('/', portfolioController.getAllPortfolios);
  *     summary: get portfolio by id
  *     description: return a portfolio by id
  *     tags:
- *       - get portfolio details
+ *       - Portfolio Data
  *     parameters:
  *       - in: path
  *         name: id
@@ -101,6 +101,8 @@ router.get('/:id', portfolioController.getPortfolioById);
  *   delete:
  *     summary: Delete a portfolio by ID
  *     description: Remove the specified portfolio record from the database using its ID
+ *     tags: 
+ *       - Portfolio Analysis
  *     parameters:
  *       - in: path
  *         name: id
@@ -129,6 +131,8 @@ router.delete('/:id', portfolioController.deletePortfolio);
  *   put:
  *     summary: Update a portfolio by ID
  *     description: Update portfolioName, details, and recalculate expected return and volatility for the specified portfolio
+ *     tags: 
+ *       - Portfolio Analysis    
  *     parameters:
  *       - in: path
  *         name: id
@@ -196,7 +200,7 @@ router.put('/:id', portfolioController.updatePortfolio);
 
 /**
  * @swagger
- * /api/portfolios/createProfolio:
+ * /api/stocks/createProfolio:
  *   post:
  *     summary: Calculate portfolio returns and risk, then store results
  *     description: Computes portfolio expected return and risk metrics using input stock codes and their weight ratios, then persists the results to database
@@ -230,7 +234,7 @@ router.put('/:id', portfolioController.updatePortfolio);
  *                     stockCode:
  *                       type: string
  *                       description: Unique identifier of the stock (e.g., stock code)
- *                       example: "600036"
+ *                       example: "sz000858"
  *                       minLength: 1
  *                       maxLength: 20
  *                     ratio:
@@ -240,6 +244,9 @@ router.put('/:id', portfolioController.updatePortfolio);
  *                       example: 0.3
  *                       minimum: 0
  *                       maximum: 1
+ *                 example: [ { "stockCode": "sh600519", "ratio": 0.5 },{ "stockCode": "sz000858", "ratio": 0.5 }]                  
+ *
+                             
  *     responses:
  *       200:
  *         description: Successful calculation and storage
@@ -308,7 +315,7 @@ router.put('/:id', portfolioController.updatePortfolio);
  *                       value: "Failed to process portfolio: error occurred during calculation"
  */
 
-router.post('/createProfolio', portfolioController.createProfolio);
+router.post('/createPortfolio', portfolioController.createPortfolio);
 
 
 module.exports = router;
