@@ -1,7 +1,7 @@
 const stockService=require('../services/stockService');
 const express = require('express');
 const app = express();
-
+const dayjs = require('dayjs');
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: true }));
 const validCodes = [
@@ -26,15 +26,15 @@ exports.getStockData=async(req,res)=>{
                 message: '股票代码无效，需为两位小写字母加6个数字格式'
             });
         }
- 
-        //调用Service层的业务逻辑，传入股票代码，获取数据
-        const data=await stockService.fetchStockData(stockCode);
-        if (!data) { 
+        if (!validCodes.includes(stockCode)){
             return res.status(404).json({
                 success: false,
                 message: '未找到该股票数据'
             });
         }
+        //调用Service层的业务逻辑，传入股票代码，获取数据
+        const data=await stockService.fetchStockData(stockCode);
+     
         res.status(200).json({
             success:true,
             data:data,
@@ -55,9 +55,10 @@ exports.createProfolio=async(req,res)=>{
         //从请求菜属中获取股票代码stocks
        //stocks示例
        //json
-       //{stock Code：'ASA',RATIO:0.3},{stock Code：'ASA',RATIO:0.3},{stock Code：'ASA',RATIO:0.3}
-        const {stocks}=req.body;
-
+       //{name: dt ;details: [{stock Code：'ASA',RATIO:0.3},{stock Code：'ASA',RATIO:0.3},{stock Code：'ASA',RATIO:0.3}]}
+       const { name, details } = req.body;
+    
+        const stocks=details;
         const stockCodeRegex = /^[a-z]{2}\d{6}$/;
         if(stocks==null)
         {
@@ -101,7 +102,7 @@ exports.createProfolio=async(req,res)=>{
 
         //调用Service层的业务逻辑，传入股票代码，获取数据
        
-        const result=await stockService.createProfolio(stocks);
+        const result=await stockService.createProfolio(name,stocks);
         res.status(200).json({
             success:true,
             message:'收益计算成功',
@@ -120,3 +121,34 @@ exports.createProfolio=async(req,res)=>{
         });
     }
 };
+exports.getAllStockInfo=async(req,res)=>{
+    const today = new Date();
+    const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
+    const year = yesterday.getFullYear();
+    const month = String(yesterday.getMonth() + 1).padStart(2, '0'); // 月份 0~11，需 +1
+    const day = String(yesterday.getDate()).padStart(2, '0');
+    const timeStep = `${year}-${month}-${day} 15:00:00`;
+    let targetDate = dayjs(timeStep); // 转为 dayjs 对象
+    const dayOfWeek = targetDate.day(); // 获取星期：0(周日) ~ 6(周六)
+    // 判断是否为周末：周六(6) 或 周日(0)，则回溯到上周五
+    if (dayOfWeek === 6) { // 周六
+      targetDate = targetDate.subtract(1, 'day'); // 减1天到周五
+    } else if (dayOfWeek === 0) { // 周日
+      targetDate = targetDate.subtract(2, 'day'); // 减2天到周五
+    }
+    // （如需处理法定节假日，可在此处扩展：判断是否在节假日列表，再回溯最近工作日）
+    
+    // 2. 拼接最终要查询的日期字符串（假设 ts 字段是 DATETIME 或 DATE 类型）
+    const queryDate = targetDate.format('YYYY-MM-DD')+ ' 15:00:00';
+
+    console.log(queryDate)
+    const result =await stockService.fetchAllStockData(queryDate);
+    return res.status(200).json({
+        success:true,
+        result:result,
+        message:'return successful'
+        
+     
+    });
+
+}

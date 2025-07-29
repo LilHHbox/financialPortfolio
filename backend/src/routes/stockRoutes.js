@@ -66,6 +66,50 @@ const stockController = require('../controllers/stockController');
  */
 router.get('/getStockInfoList/:stockCode', stockController.getStockData);
 
+/**
+ * @swagger
+ * /api/stocks/getAllStockInfo:
+ *   get:
+ *     summary: Get all stock information for the latest trading day
+ *     description: Returns stock information for all stocks from the most recent working day, including stock code, Chinese name, and opening price
+ *     tags:
+ *       - Stock Information
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved all latest stock information
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   stockcode:
+ *                     type: string
+ *                     description: Stock code identifier
+ *                     example: "600000"
+ *                   chineseName:
+ *                     type: string
+ *                     description: Chinese name of the stock
+ *                     example: "浦发银行"
+ *                   openPrice:
+ *                     type: number
+ *                     format: float
+ *                     description: Opening price from the latest trading day
+ *                     example: 8.56
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Error message
+ *                   example: "Failed to retrieve stock information"
+ */
+router.get('/getAllStockInfo', stockController.getAllStockInfo);
 
 /**
  * @swagger
@@ -82,11 +126,18 @@ router.get('/getStockInfoList/:stockCode', stockController.getStockData);
  *           schema:
  *             type: object
  *             required:
- *               - stocks
+ *               - name
+ *               - details
  *             properties:
- *               stocks:
+ *               name:
+ *                 type: string
+ *                 description: Name of the portfolio, used to identify and distinguish different portfolios
+ *                 example: "My Growth Portfolio"
+ *                 minLength: 1
+ *                 maxLength: 100
+ *               details:
  *                 type: array
- *                 description: Array of stock allocations with codes and weight ratios
+ *                 description: Array of stock codes and their weight ratios, the sum of all weights should equal 1
  *                 items:
  *                   type: object
  *                   required:
@@ -95,13 +146,17 @@ router.get('/getStockInfoList/:stockCode', stockController.getStockData);
  *                   properties:
  *                     stockCode:
  *                       type: string
- *                       description: Unique stock identifier
+ *                       description: Unique identifier of the stock (e.g., stock code)
  *                       example: "600036"
+ *                       minLength: 1
+ *                       maxLength: 20
  *                     ratio:
  *                       type: number
  *                       format: float
- *                       description: Weight ratio of the stock in portfolio (0-1)
+ *                       description: Weight ratio of the stock in the portfolio, ranging from 0 to 1
  *                       example: 0.3
+ *                       minimum: 0
+ *                       maximum: 1
  *     responses:
  *       200:
  *         description: Successful calculation and storage
@@ -114,6 +169,10 @@ router.get('/getStockInfoList/:stockCode', stockController.getStockData);
  *                   type: number
  *                   description: Unique identifier of the created portfolio
  *                   example: 123
+ *                 name:
+ *                   type: string
+ *                   description: Name of the portfolio
+ *                   example: "My Growth Portfolio"
  *                 reward:
  *                   type: number
  *                   format: float
@@ -133,7 +192,13 @@ router.get('/getStockInfoList/:stockCode', stockController.getStockData);
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Invalid stock allocation - please provide valid codes and ratios (0-1 range)"
+ *                   examples:
+ *                     invalidRatio:
+ *                       value: "Invalid stock allocation - please provide valid codes and ratios (0-1 range)"
+ *                     sumNotOne:
+ *                       value: "Sum of weights must equal 1"
+ *                     missingName:
+ *                       value: "Portfolio name is required"
  *       404:
  *         description: Stock data not found for one or more codes
  *         content:
@@ -143,7 +208,7 @@ router.get('/getStockInfoList/:stockCode', stockController.getStockData);
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Stock data not found for: 600036"
+ *                   example: "Stock data not found for: 600036, 601318"
  *       500:
  *         description: Server error during calculation or storage
  *         content:
@@ -153,8 +218,16 @@ router.get('/getStockInfoList/:stockCode', stockController.getStockData);
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Failed to process portfolio: database connection error"
+ *                   examples:
+ *                     dbError:
+ *                       value: "Failed to process portfolio: database connection error"
+ *                     calculationError:
+ *                       value: "Failed to process portfolio: error occurred during calculation"
  */
+
 router.post('/createProfolio', stockController.createProfolio);
+
+
+
 
 module.exports = router;
