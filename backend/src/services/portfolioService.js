@@ -2,11 +2,21 @@ const portfoliosModel = require('../models/portfolioModel');
 
 // get all portfolios
 const getAllPortfolios = async () => {
-    // 调用模型层方法获取所有投资组合
+    // calling model layer method to fetch all portfolios
     const portfolios = await portfoliosModel.getAllPortfolios();
     return portfolios;
-
 }
+
+// get portfolio by id
+const getPortfolioById = async (id) => {
+    // validate the id, must be a positive integer
+    if (typeof id !== 'number' || id <= 0 || Number.isNaN(id) || !Number.isInteger(id)) {
+        throw new Error('Invalid portfolio ID');
+    }
+    // calling model layer method to fetch portfolio details
+    const portfolio = await portfoliosModel.getPortfolioById(id);
+    return portfolio; 
+};
 
 const deletePortfolioById = async (id) => {
     // 校验
@@ -165,6 +175,7 @@ const createProfolio = async (name,stocks) => {
 
 module.exports = { 
     getAllPortfolios,
+    getPortfolioById,
     deletePortfolioById,
     updatePortfolio,
     createProfolio

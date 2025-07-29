@@ -7,6 +7,16 @@ const getAllPortfolios = async () => {
     return rows; // 返回所有投资组合的id和name
 };
 
+//get portfolio info by id
+const getPortfolioById = async (id) => {
+    const sql = 'SELECT * FROM portfolio WHERE id = ?';
+    const [rows] = await pool.query(sql, [id]);
+    if (rows.length === 0) {
+        throw new Error('Portfolio not found');
+    }
+    return rows[0]; // 返回投资组合的详细信息
+};
+
 const deletePortfolioById = async (id) => {
     const sql = 'DELETE FROM portfolio WHERE id = ?';
     const [result] = await pool.query(sql, [id]);
@@ -103,6 +113,7 @@ const  getStockDataFromLatest= async(code) => {
 
 module.exports = {
     getAllPortfolios,
+    getPortfolioById,
     deletePortfolioById,
     updatePortfolioById,
     savePortfolioResult,
