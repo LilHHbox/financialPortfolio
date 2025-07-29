@@ -66,86 +66,39 @@ const stockController = require('../controllers/stockController');
  */
 router.get('/getStockInfoList/:stockCode', stockController.getStockData);
 
-
 /**
  * @swagger
- * /api/stocks/createProfolio:
- *   post:
- *     summary: Calculate portfolio returns and risk, then store results
- *     description: Computes portfolio expected return and risk metrics using input stock codes and their weight ratios, then persists the results to database
+ * /api/stocks/getAllStockInfo:
+ *   get:
+ *     summary: Get all stock information for the latest trading day
+ *     description: Returns stock information for all stocks from the most recent working day, including stock code, Chinese name, and opening price
  *     tags:
- *       - Portfolio Analysis
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - stocks
- *             properties:
- *               stocks:
- *                 type: array
- *                 description: Array of stock allocations with codes and weight ratios
- *                 items:
- *                   type: object
- *                   required:
- *                     - stockCode
- *                     - ratio
- *                   properties:
- *                     stockCode:
- *                       type: string
- *                       description: Unique stock identifier
- *                       example: "600036"
- *                     ratio:
- *                       type: number
- *                       format: float
- *                       description: Weight ratio of the stock in portfolio (0-1)
- *                       example: 0.3
+ *       - Stock Information
  *     responses:
  *       200:
- *         description: Successful calculation and storage
+ *         description: Successfully retrieved all latest stock information
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 portfolioId:
- *                   type: number
- *                   description: Unique identifier of the created portfolio
- *                   example: 123
- *                 reward:
- *                   type: number
- *                   format: float
- *                   description: Expected return rate of the portfolio
- *                   example: 0.052367
- *                 risk:
- *                   type: number
- *                   format: float
- *                   description: Risk rate (volatility) of the portfolio
- *                   example: 0.021543
- *       400:
- *         description: Invalid input data
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "Invalid stock allocation - please provide valid codes and ratios (0-1 range)"
- *       404:
- *         description: Stock data not found for one or more codes
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "Stock data not found for: 600036"
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   stockcode:
+ *                     type: string
+ *                     description: Stock code identifier
+ *                     example: "600000"
+ *                   chineseName:
+ *                     type: string
+ *                     description: Chinese name of the stock
+ *                     example: "浦发银行"
+ *                   openPrice:
+ *                     type: number
+ *                     format: float
+ *                     description: Opening price from the latest trading day
+ *                     example: 8.56
  *       500:
- *         description: Server error during calculation or storage
+ *         description: Internal server error
  *         content:
  *           application/json:
  *             schema:
@@ -153,8 +106,14 @@ router.get('/getStockInfoList/:stockCode', stockController.getStockData);
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Failed to process portfolio: database connection error"
+ *                   description: Error message
+ *                   example: "Failed to retrieve stock information"
  */
-router.post('/createProfolio', stockController.createProfolio);
+router.get('/getAllStockInfo', stockController.getAllStockInfo);
+
+
+
+
+
 
 module.exports = router;
