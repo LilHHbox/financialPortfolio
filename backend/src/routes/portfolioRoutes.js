@@ -30,6 +30,8 @@ const portfolioController = require('../controllers/portfolioController'); // �
 
 // 定义获取所有投资组合的路由
 router.get('/', portfolioController.getAllPortfolios);
+// 定义获取某个投资组合的路由
+router.get('/:id', portfolioController.getPortfolioById);
 // 定义删除投资组合的路由
 router.delete('/:id', portfolioController.deletePortfolio);
 // 定义更新投资组合的路由

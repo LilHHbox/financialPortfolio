@@ -6,10 +6,31 @@ const getAllPortfolios = async (req, res) => {
         const portfolios = await portfolioService.getAllPortfolios();
         res.status(200).json(portfolios);
     } catch (error) {
-        console.error('获取投资组合失败：', error);
-        res.status(500).json({ message: '服务器内部错误' });
+        console.error('get all portfolios error:', error);
+        res.status(500).json({ message: 'server side error' });
     }
 };
+
+// get portfolio by id
+const getPortfolioById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const portfolioId = Number(id);
+        const portfolio = await portfolioService.getPortfolioById(portfolioId);
+        res.status(200).json(portfolio);
+    } catch (error) {
+        if (error.message.includes('Invalid portfolio ID')) {
+            return res.status(400).json({ message: error.message });
+        }
+        if (error.message.includes('Portfolio not found')) {
+            return res.status(404).json({ message: error.message });
+        }
+        console.error('get portfolio by id error:', error);
+        res.status(500).json({ message: 'server side error' });
+    }
+};
+
+
 
 const deletePortfolio = async (req, res) => {
     try {
@@ -67,6 +88,7 @@ const updatePortfolio = async (req, res) => {
 
 module.exports = {
     getAllPortfolios,
+    getPortfolioById,
     deletePortfolio,
     updatePortfolio
 };
