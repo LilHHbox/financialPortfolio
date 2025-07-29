@@ -25,18 +25,21 @@ const calculateExpectedVolatility = (stocks) => {
   return stocks.reduce((product, stock) => product * stock.ratio, 1);
 };
 
-const updatePortfolio = async (id, details) => {
+const updatePortfolio = async (id, portfolioName, details) => {
   // 1. 参数校验
   if (typeof id !== 'number' || Number.isNaN(id) || id <= 0 || !Number.isInteger(id)) {
-    throw new Error('无效的portfolio ID（必须是正整数）');
+    throw new Error('Invalid portfolio ID (must be a positive integer)');
+  }
+  if (typeof portfolioName !== 'string' || portfolioName.trim () === '' || portfolioName.length > 255) {
+    throw new Error ('portfolioName must be a non-empty string and its length must not exceed 255');
   }
   if (!details || !details.stocks || !Array.isArray(details.stocks) || details.stocks.length === 0) {
-    throw new Error('details必须包含非空的stocks数组');
+    throw new Error('details must contain a non-empty stocks array');
   }
   // 校验每个股票是否包含code和ratio
   details.stocks.forEach((stock, index) => {
     if (!stock.code || typeof stock.ratio !== 'number' || stock.ratio <= 0) {
-      throw new Error(`第${index+1}只股票格式错误（需包含code和正数ratio）`);
+      throw new Error(`${index+1}Only stock format error (must include code and positive ratio)`);
     }
   });
 
@@ -47,13 +50,14 @@ const updatePortfolio = async (id, details) => {
   // 3. 调用模型层更新数据库
   const isUpdated = await portfoliosModel.updatePortfolioById(
     id,
+    portfolioName.trim (), // 去除首尾空格后存入
     details,
     expectedReturn,
     expectedVolatility
   );
 
   if (!isUpdated) {
-    throw new Error('更新失败,可能ID不存在');
+    throw new Error('The update failed. It is possible that the ID does not exist');
   }
 
   // 4. 返回计算结果
