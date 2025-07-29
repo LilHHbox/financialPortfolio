@@ -7,9 +7,9 @@ const getAllPortfolios = async () => {
     return rows; // 返回所有投资组合的id和name
 };
 
-//get portfolio details, return and volitility by id
+//get portfolio info by id
 const getPortfolioById = async (id) => {
-    const sql = 'SELECT details, expected_return, expected_volatility FROM portfolio WHERE id = ?';
+    const sql = 'SELECT * FROM portfolio WHERE id = ?';
     const [rows] = await pool.query(sql, [id]);
     if (rows.length === 0) {
         throw new Error('Portfolio not found');

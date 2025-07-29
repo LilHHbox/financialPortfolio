@@ -5,6 +5,9 @@ const getAllPortfolios = async (req, res) => {
     try {
         const portfolios = await portfolioService.getAllPortfolios();
         res.status(200).json(portfolios);
+        if (portfolios.length === 0) {
+            res.status(404).json({ message: 'No portfolios found' });
+        }
     } catch (error) {
         console.error('get all portfolios error:', error);
         res.status(500).json({ message: 'server side error' });
@@ -25,12 +28,10 @@ const getPortfolioById = async (req, res) => {
         if (error.message.includes('Portfolio not found')) {
             return res.status(404).json({ message: error.message });
         }
-        console.error('get portfolio by id error:', error);
+        console.error('failed to get portfolio by id:', error);
         res.status(500).json({ message: 'server side error' });
     }
 };
-
-
 
 const deletePortfolio = async (req, res) => {
     try {
