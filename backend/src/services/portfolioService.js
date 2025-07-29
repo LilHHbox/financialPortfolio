@@ -1,5 +1,13 @@
 const portfoliosModel = require('../models/portfolioModel');
 
+// get all portfolios
+const getAllPortfolios = async () => {
+    // 调用模型层方法获取所有投资组合
+    const portfolios = await portfoliosModel.getAllPortfolios();
+    return portfolios;
+
+}
+
 const deletePortfolioById = async (id) => {
     // 校验
     // 确保ID是一个正整数（非数字、0、负数、NaN、非整数等全部排除在外）
@@ -65,6 +73,7 @@ const updatePortfolio = async (id, details) => {
 
 
 module.exports = { 
+    getAllPortfolios,
     deletePortfolioById,
     updatePortfolio
 };
