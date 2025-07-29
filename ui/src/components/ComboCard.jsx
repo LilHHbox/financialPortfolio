@@ -1,11 +1,5 @@
 import React, { useState } from "react";
-import { Doughnut } from "react-chartjs-2";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import chartAnnotation from "chartjs-plugin-annotation";
-import ChartDataLabels from "chartjs-plugin-datalabels";
-
-// Register the necessary Chart.js plugins
-ChartJS.register(ArcElement, Tooltip, Legend, chartAnnotation, ChartDataLabels);
+import PieChart from "./PieChart";
 
 const ComboCard = ({ investments }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,6 +17,17 @@ const ComboCard = ({ investments }) => {
         ? prevSelected.filter((item) => item !== investment)
         : [...prevSelected, investment]
     );
+  };
+
+  // Handle Click Reset Button
+  const handleClickReset = () => {
+    if (selectedInvestments.length === 0) return;
+    const average = 100 / selectedInvestments.length;
+    const resetPercentages = {};
+    selectedInvestments.forEach((investment) => {
+      resetPercentages[investment] = average;
+    });
+    setInvestmentPercentages(resetPercentages);
   };
 
   // Handle Percentage Change
@@ -56,75 +61,11 @@ const ComboCard = ({ investments }) => {
     return color;
   };
 
-  // Calculate Pie Data
-  const calculatePieData = () => {
-    const totalInvestments = selectedInvestments.length;
-    if (totalInvestments <= 1) return null;
-
-    const pieData = selectedInvestments.map((investment) => {
-      return investmentPercentages[investment] || 100 / totalInvestments;
-    });
-
-    const labels = selectedInvestments;
-    const backgroundColors = selectedInvestments.map(getInvestmentColor);
-
-    return {
-      labels,
-      datasets: [
-        {
-          data: pieData,
-          backgroundColor: backgroundColors,
-          hoverOffset: 4,
-        },
-      ],
-    };
-  };
-
-  // Pie Chart Options with Annotation and Data Labels
-  const pieData = calculatePieData();
-  const options = {
-    responsive: true,
-    plugins: {
-      datalabels: {
-        display: false,
-        formatter: (value, context) => `${context.chart.data.labels[context.dataIndex]}: ${value}%`,
-        color: '#fff',
-      },
-      annotation: {
-        annotations: selectedInvestments.map((investment, index) => ({
-          type: 'box',
-          xMin: index - 0.4,
-          xMax: index + 0.4,
-          backgroundColor: getInvestmentColor(investment),
-          borderWidth: 2,
-          borderColor: '#fff',
-          label: {
-            content: `${investmentPercentages[investment] || 100 / selectedInvestments.length}%`,
-            position: 'center',
-            font: { size: 16 },
-          },
-        })),
-      },
-    },
-    onClick: (event, chartElement) => {
-      if (chartElement.length > 0) {
-        const { index } = chartElement[0];
-        const investment = selectedInvestments[index];
-        const currentPercentage = investmentPercentages[investment] || 100 / selectedInvestments.length;
-        const newPercentage = prompt("Enter new percentage", currentPercentage);
-
-        if (newPercentage && !isNaN(newPercentage)) {
-          const updatedPercentages = { ...investmentPercentages, [investment]: parseFloat(newPercentage) };
-          setInvestmentPercentages(updatedPercentages);
-        }
-      }
-    },
-  };
 
   return (
     <div className="bg-neutral-800 rounded-lg shadow-md p-6 flex flex-row">
       <div className="w-1/2">
-        <h3 className="text-heading-2 font-semibold text-brand-primary mb-4">Choose Your Portfolio</h3>
+        <h3 className="text-heading-2 font-semibold text-brand-primary mb-4">Choose Your Next Portfolio</h3>
         <div className="relative">
           {/* Dropdown */}
           <div
@@ -180,14 +121,37 @@ const ComboCard = ({ investments }) => {
                 </li>
               ))}
             </ul>
+
+            <div className="flex flex-row p-2 mt-2 justify-between items-center">
+              <button
+                className="px-2 py-2 rounded bg-brand-500 text-white disabled:opacity-50 text-body"
+              >
+                Create
+              </button>
+              <button
+                className="px-2 py-2 rounded bg-neutral-400 text-white disabled:opacity-50 text-body"
+                onClick={handleClickReset}
+              >
+                Reset
+              </button>
+            </div>
           </div>
         )}
       </div>
 
-      {pieData && (
-        <div className="mt-8 w-1/2">
-          <p className="text-heading-3 text-neutral-100 mb-2 text-center">Portfolio Distribution</p>
-          <Doughnut data={pieData} options={options} />
+      {selectedInvestments.length > 1 && (
+        <div className="w-1/2">
+          <PieChart
+            selectedInvestments={selectedInvestments}
+            investmentPercentages={investmentPercentages}
+            getInvestmentColor={getInvestmentColor}
+            onSliceClick={(investment, newValue) => {
+              setInvestmentPercentages((prev) => ({
+                ...prev,
+                [investment]: newValue,
+              }));
+            }}
+          />
         </div>
       )}
     </div>

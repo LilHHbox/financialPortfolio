@@ -1,31 +1,36 @@
-const express = require('express');
-const router = express.Router();
-const portfolioController = require('../controllers/portfolioController');
+const express  = require('express');
+const router   = express.Router(); // 创建路由实例  
+const portfolioController = require('../controllers/portfolioController'); // 引入控制层
 
 /**
  * @swagger
- * /api/portfolios/{id}:
- *   delete:
- *     summary: Delete a portfolio by ID
- *     description: Remove the specified portfolio record from the database using its ID
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *           format: int64
- *         description: Portfolio ID (positive integer)
+ * /api/portfolios:
+ *   get:
+ *     summary: get all portfolios
+ *     description: return a all portfolios with name and id
  *     responses:
- *       204:
- *         description: Portfolio deleted successfully (no content)
- *       400:
- *         description: Invalid ID (not a positive integer)
- *       404:
- *         description: Portfolio with specified ID not found
+ *       200:
+ *         description: success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                     example: 1
+ *                   portfolioName:
+ *                     type: string
+ *                     example: portfolio1
  *       500:
- *         description: Internal server error
+ *         description: server side error
  */
+
+// 定义获取所有投资组合的路由
+router.get('/', portfolioController.getAllPortfolios);
+// 定义删除投资组合的路由
 router.delete('/:id', portfolioController.deletePortfolio);
 
 /**

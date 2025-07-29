@@ -1,5 +1,12 @@
 const pool = require('../db'); //使用项目已有的数据库连接池
 
+// get all portfolios.name and id from portfolio table
+const getAllPortfolios = async () => {
+    const sql = 'SELECT id, portfolioName FROM portfolio';
+    const [rows] = await pool.query(sql);
+    return rows; // 返回所有投资组合的id和name
+};
+
 const deletePortfolioById = async (id) => {
     const sql = 'DELETE FROM portfolio WHERE id = ?';
     const [result] = await pool.query(sql, [id]);
@@ -18,6 +25,7 @@ const updatePortfolioById = async (id, portfolioName, details, expectedReturn, e
 
 
 module.exports = {
+    getAllPortfolios,
     deletePortfolioById,
     updatePortfolioById
 };
