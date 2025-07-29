@@ -126,11 +126,18 @@ router.get('/getAllStockInfo', stockController.getAllStockInfo);
  *           schema:
  *             type: object
  *             required:
- *               - stocks
+ *               - name
+ *               - details
  *             properties:
- *               stocks:
+ *               name:
+ *                 type: string
+ *                 description: Name of the portfolio, used to identify and distinguish different portfolios
+ *                 example: "My Growth Portfolio"
+ *                 minLength: 1
+ *                 maxLength: 100
+ *               details:
  *                 type: array
- *                 description: Array of stock allocations with codes and weight ratios
+ *                 description: Array of stock codes and their weight ratios, the sum of all weights should equal 1
  *                 items:
  *                   type: object
  *                   required:
@@ -139,13 +146,17 @@ router.get('/getAllStockInfo', stockController.getAllStockInfo);
  *                   properties:
  *                     stockCode:
  *                       type: string
- *                       description: Unique stock identifier
+ *                       description: Unique identifier of the stock (e.g., stock code)
  *                       example: "600036"
+ *                       minLength: 1
+ *                       maxLength: 20
  *                     ratio:
  *                       type: number
  *                       format: float
- *                       description: Weight ratio of the stock in portfolio (0-1)
+ *                       description: Weight ratio of the stock in the portfolio, ranging from 0 to 1
  *                       example: 0.3
+ *                       minimum: 0
+ *                       maximum: 1
  *     responses:
  *       200:
  *         description: Successful calculation and storage
@@ -158,6 +169,10 @@ router.get('/getAllStockInfo', stockController.getAllStockInfo);
  *                   type: number
  *                   description: Unique identifier of the created portfolio
  *                   example: 123
+ *                 name:
+ *                   type: string
+ *                   description: Name of the portfolio
+ *                   example: "My Growth Portfolio"
  *                 reward:
  *                   type: number
  *                   format: float
@@ -177,7 +192,13 @@ router.get('/getAllStockInfo', stockController.getAllStockInfo);
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Invalid stock allocation - please provide valid codes and ratios (0-1 range)"
+ *                   examples:
+ *                     invalidRatio:
+ *                       value: "Invalid stock allocation - please provide valid codes and ratios (0-1 range)"
+ *                     sumNotOne:
+ *                       value: "Sum of weights must equal 1"
+ *                     missingName:
+ *                       value: "Portfolio name is required"
  *       404:
  *         description: Stock data not found for one or more codes
  *         content:
@@ -187,7 +208,7 @@ router.get('/getAllStockInfo', stockController.getAllStockInfo);
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Stock data not found for: 600036"
+ *                   example: "Stock data not found for: 600036, 601318"
  *       500:
  *         description: Server error during calculation or storage
  *         content:
@@ -197,8 +218,13 @@ router.get('/getAllStockInfo', stockController.getAllStockInfo);
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Failed to process portfolio: database connection error"
+ *                   examples:
+ *                     dbError:
+ *                       value: "Failed to process portfolio: database connection error"
+ *                     calculationError:
+ *                       value: "Failed to process portfolio: error occurred during calculation"
  */
+
 router.post('/createProfolio', stockController.createProfolio);
 
 

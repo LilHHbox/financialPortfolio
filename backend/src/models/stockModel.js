@@ -1,5 +1,12 @@
 // src/models/stockModel.js
 const db = require('../db');
+const validCodes = [
+    'sh600519', 'sz000858', 'sz300750', 'sz002594',
+    'sh601012', 'sz002371', 'sh688981', 'sh600030', 'sh600036',
+    'sh601318', 'sh600276', 'sz300760', 'sz000333', 'sh600588',
+    'sz002415', 'sh600031', 'sh600900', 'sz002352', 'sh600309',
+    'sz002475'
+];
 const codeNameMap = {
     'sh600519': '贵州茅台',
     'sz000858': '五粮液',
@@ -60,17 +67,20 @@ class StockModel {
             return rows;
         }
     }
-    static  savePortfolioResult = async (stocks, reward, risk) => {
+    static  savePortfolioResult = async (stocks, reward, risk,name) => {
+
+
         try {
             // 直接使用已有的 db 连接执行查询，和 getStockDataFromSource 保持一致
             const [result] = await db.query(
                 `INSERT INTO portfolio 
-                 (details, expected_return, expected_volatility, created_at) 
-                 VALUES (?, ?, ?, NOW())`,
+                 (details, expected_return, expected_volatility, created_at,portfolioName) 
+                 VALUES (?, ?, ?, NOW(),?)`,
                 [
                     JSON.stringify(stocks),  // 存储股票配置详情
-                    parseFloat(reward.toFixed(5)),  // 保留5位小数
-                    parseFloat(risk.toFixed(5))     // 保留5位小数
+                    parseFloat(reward),  // 保留5位小数
+                    parseFloat(risk),     // 保留5位小数
+                    name
                 ]
             );
             return result.insertId;

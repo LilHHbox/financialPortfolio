@@ -2,42 +2,13 @@
 
 
 const stockModel=require('../models/stockModel');
-
-// Fetch stock data for a specific stock code
-exports.fetchStockData = async (stockCode) => {
-
-    
-    const today = new Date().toISOString().slice(0, 10);
-    // get the stock data for today
-    let data = await stockModel.getStockDataFromSource(stockCode, today);
-    if (!data || data.length === 0) {
-        // if no data for today, get the latest available data
-        data = await stockModel.getStockDataFromLatest(stockCode);
-    }
-    return data;
-};
-
-//{stock Code：'ASA',RATIO:0.3},{stock Code：'ASA',RATIO:0.3},{stock Code：'ASA',RATIO:0.3}=stocks
-exports.createProfolio = async (stocks) => {
-    //总收益
-  
-    const {totalReward, totalRisk}= calRewardAndRisk(stocks)
-    const portfolioId = await stockModel.savePortfolioResult(stocks, totalReward, totalRisk);
-     
-    return { 
-        portfolioId,
-        reward: parseFloat(totalReward.toFixed(6)),  // 保留6位小数
-        risk: parseFloat(totalRisk.toFixed(6))       // 保留6位小数
-    };
-
-}
-
 exports.calRewardAndRisk = async (stocks) => {
+   
     //总收益
     if (!Array.isArray(stocks) || stocks.length === 0) {
         throw new Error('请提供有效的股票配置数组');
     }
-    
+   
     let totalReward = 0;  // 组合总收益
     let totalRisk = 0;    // 组合总风险
     const stockReturns = [];  // 存储单只股票收益率，用于后续风险计算
@@ -65,11 +36,11 @@ exports.calRewardAndRisk = async (stocks) => {
         const startPrice = closes[0];
         const endPrice = closes[closes.length - 1];
         const stockReward = (endPrice - startPrice) / startPrice;
-
+ 
         // 存储收益率和权重，用于后续风险计算
         stockReturns.push(stockReward);
         weights.push(ratio);
-
+  
         // 累加加权收益
         totalReward += stockReward * ratio;
     }
@@ -85,14 +56,46 @@ exports.calRewardAndRisk = async (stocks) => {
     
     // 3. 计算标准差（总风险），并结合权重调整
     totalRisk = Math.sqrt(variance) * (weights.reduce((sum, w) => sum + w, 0) / weights.length);
-    
-   
+
+
     return { 
-        reward: parseFloat(totalReward.toFixed(6)),  // 保留6位小数
-        risk: parseFloat(totalRisk.toFixed(6))       // 保留6位小数
+        totalReward,  // 保留6位小数
+        totalRisk     // 保留6位小数
     };
 
 }
+// Fetch stock data for a specific stock code
+exports.fetchStockData = async (stockCode) => {
+
+    
+    const today = new Date().toISOString().slice(0, 10);
+    // get the stock data for today
+    let data = await stockModel.getStockDataFromSource(stockCode, today);
+    if (!data || data.length === 0) {
+        // if no data for today, get the latest available data
+        data = await stockModel.getStockDataFromLatest(stockCode);
+    }
+    return data;
+};
+
+//{stock Code：'ASA',RATIO:0.3},{stock Code：'ASA',RATIO:0.3},{stock Code：'ASA',RATIO:0.3}=stocks
+exports.createProfolio = async (name,stocks) => {
+    //总收益
+  
+    const { totalReward, totalRisk } = await exports.calRewardAndRisk(stocks);  // ✅ 正确写法（直接调用函数）
+    const formattedReward = totalReward.toFixed(5);// 保留5位小数
+    const formattedRisk = totalRisk.toFixed(5);// 保留5位小数
+    const portfolioId = await stockModel.savePortfolioResult(stocks, formattedReward, formattedRisk,name);
+     
+    return { 
+        portfolioId,
+        formattedReward,  
+        formattedRisk      
+    };
+
+}
+
+
 
 exports.fetchAllStockData =async(timeStep)=>{
     

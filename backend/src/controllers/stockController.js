@@ -26,15 +26,15 @@ exports.getStockData=async(req,res)=>{
                 message: '股票代码无效，需为两位小写字母加6个数字格式'
             });
         }
- 
-        //调用Service层的业务逻辑，传入股票代码，获取数据
-        const data=await stockService.fetchStockData(stockCode);
-        if (!data) { 
+        if (!validCodes.includes(stockCode)){
             return res.status(404).json({
                 success: false,
                 message: '未找到该股票数据'
             });
         }
+        //调用Service层的业务逻辑，传入股票代码，获取数据
+        const data=await stockService.fetchStockData(stockCode);
+     
         res.status(200).json({
             success:true,
             data:data,
@@ -55,9 +55,10 @@ exports.createProfolio=async(req,res)=>{
         //从请求菜属中获取股票代码stocks
        //stocks示例
        //json
-       //{stock Code：'ASA',RATIO:0.3},{stock Code：'ASA',RATIO:0.3},{stock Code：'ASA',RATIO:0.3}
-        const {stocks}=req.body;
-
+       //{name: dt ;details: [{stock Code：'ASA',RATIO:0.3},{stock Code：'ASA',RATIO:0.3},{stock Code：'ASA',RATIO:0.3}]}
+       const { name, details } = req.body;
+    
+        const stocks=details;
         const stockCodeRegex = /^[a-z]{2}\d{6}$/;
         if(stocks==null)
         {
@@ -101,7 +102,7 @@ exports.createProfolio=async(req,res)=>{
 
         //调用Service层的业务逻辑，传入股票代码，获取数据
        
-        const result=await stockService.createProfolio(stocks);
+        const result=await stockService.createProfolio(name,stocks);
         res.status(200).json({
             success:true,
             message:'收益计算成功',
