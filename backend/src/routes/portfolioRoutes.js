@@ -30,7 +30,32 @@ const portfolioController = require('../controllers/portfolioController'); // �
 
 // 定义获取所有投资组合的路由
 router.get('/', portfolioController.getAllPortfolios);
-// 定义删除投资组合的路由
+
+
+/**
+ * @swagger
+ * /api/portfolios/{id}:
+ *   delete:
+ *     summary: Delete a portfolio by ID
+ *     description: Remove the specified portfolio record from the database using its ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           format: int64
+ *         description: Portfolio ID (positive integer)
+ *     responses:
+ *       204:
+ *         description: Portfolio deleted successfully (no content)
+ *       400:
+ *         description: Invalid ID (not a positive integer)
+ *       404:
+ *         description: Portfolio with specified ID not found
+ *       500:
+ *         description: Internal server error
+ */
 router.delete('/:id', portfolioController.deletePortfolio);
 
 /**
@@ -76,7 +101,7 @@ router.delete('/:id', portfolioController.deletePortfolio);
  *                         ratio:
  *                           type: number
  *                           format: float
- *                           example: 0.5
+ *                           example: 1
  *                           description: Allocation ratio of the stock in the portfolio (positive number)
  *     responses:
  *       200:
@@ -102,5 +127,4 @@ router.delete('/:id', portfolioController.deletePortfolio);
  *         description: Internal server error
  */
 router.put('/:id', portfolioController.updatePortfolio);
-
 module.exports = router;
