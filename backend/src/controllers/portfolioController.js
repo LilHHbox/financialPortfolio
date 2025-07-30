@@ -153,12 +153,13 @@ const createPortfolio=async(req,res)=>{
         //调用Service层的业务逻辑，传入股票代码，获取数据
        
         const result=await portfolioService.createPortfolio(name,stocks);
-        res.status(200).json({
+        return res.status(200).json({
             success:true,
             message:'收益计算成功',
-            data:{portfolioId:result.portfolioId,
-                reward:result.reward,//总收益
-                risk:result.risk}
+            data:{
+                portfolioId:result.portfolioId,
+                reward:result.formattedReward,//总收益
+                risk:result.formattedRisk}
         });
 
 
