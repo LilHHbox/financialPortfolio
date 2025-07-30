@@ -3,5 +3,3 @@ candle.html
 .DS_Store
 backend/.env
 backend/docker-compose.yml
-backend/package-lock.json
-backend/package.json
