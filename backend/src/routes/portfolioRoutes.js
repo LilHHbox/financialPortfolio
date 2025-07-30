@@ -131,6 +131,8 @@ router.delete('/:id', portfolioController.deletePortfolio);
  *   put:
  *     summary: Update a portfolio by ID
  *     description: Update portfolio name and stocks, recalculate return and volatility
+ *     tags: 
+ *       - Portfolio Analysis
  *     parameters:
  *       - in: path
  *         name: id
