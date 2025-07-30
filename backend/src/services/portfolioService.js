@@ -75,10 +75,10 @@ const updatePortfolio = async (id, name, details) => {
   }
 
   // 4. 返回计算结果
-  return {
-    expected_return: parseFloat(expectedReturn), // 保留4位小数
-    expected_volatility: parseFloat(expectedVolatility)
-  };
+  return {"data":{
+    reward: expectedReturn, // 保留4位小数
+    risk: expectedVolatility
+  }};
 };
 
 
