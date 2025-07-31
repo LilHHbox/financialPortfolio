@@ -4,10 +4,10 @@ const portfolioService = require('../services/portfolioService');
 const getAllPortfolios = async (req, res) => {
     try {
         const portfolios = await portfolioService.getAllPortfolios();
-        res.status(200).json(portfolios);
-        if (portfolios.length === 0) {
-            res.status(404).json({ message: 'No portfolios found' });
+        if (!portfolios || portfolios.length === 0) {
+            return res.status(404).json({ message: 'No portfolios found' });
         }
+        return res.status(200).json(portfolios);
     } catch (error) {
         console.error('get all portfolios error:', error);
         res.status(500).json({ message: 'server side error' });
