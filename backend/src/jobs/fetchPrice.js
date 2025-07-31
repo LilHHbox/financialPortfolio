@@ -47,3 +47,4 @@ async function fetchAndSave() {
 }
 
 module.exports = fetchAndSave;
+
