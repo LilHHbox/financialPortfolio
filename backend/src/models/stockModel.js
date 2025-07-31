@@ -33,17 +33,17 @@ class StockModel {
     /** 按指定日期查 */
     static async getStockDataFromSource(code, date) {
         //check if code is in the code list
-    
-            const [rows] = await db.query(
-                `SELECT ts AS datetime, open, high, low, close, volume
+
+        const [rows] = await db.query(
+            `SELECT ts AS datetime, open, high, low, close, volume
            FROM stock_price
            WHERE code = ? AND DATE(ts) = ?
            ORDER BY ts ASC`,
-                [code, date]
-            );
-            return rows;
+            [code, date]
+        );
+        return rows;
 
-        
+
 
     }
 
@@ -54,20 +54,25 @@ class StockModel {
             return null;
         } else {
             const [rows] = await db.query(
-                `SELECT ts AS datetime, open, high, low, close, volume
-       FROM stock_price
-       WHERE code = ?
-         AND DATE(ts) = (
-           SELECT DATE(MAX(ts)) FROM stock_price WHERE code = ?
-         )
-       ORDER BY ts ASC`,
+                `SELECT  ts   AS datetime,
+               open, high, low, close, volume
+               FROM    stock_price
+               WHERE   code = ?                       
+             AND   DATE(ts) = (                  
+              SELECT DISTINCT DATE(ts)      
+              FROM   stock_price
+              WHERE  code = ?
+              ORDER  BY DATE(ts) DESC
+              LIMIT  1 OFFSET 1             
+            )
+            ORDER BY ts ASC;`,
                 [code, code]
             );
-            
+
             return rows;
         }
     }
-    static  savePortfolioResult = async (stocks, reward, risk,name) => {
+    static savePortfolioResult = async (stocks, reward, risk, name) => {
 
 
         try {
@@ -92,24 +97,24 @@ class StockModel {
     };
     static async getAllStockData(timeStep) {
         //check if code is in the code list
-       
-            const [rows] = await db.query(
-                `SELECT code, close
+
+        const [rows] = await db.query(
+            `SELECT code, close
                 FROM stock_price
                 WHERE ts = ?
                   
                   `,
-       [timeStep]
-            );
+            [timeStep]
+        );
         const result = rows.map(row => ({
-                stockCode: row.code,
-                chineseName: codeNameMap[row.code], // 根据 code 映射中文名称
-                close: row.close
-            }));    
-            return result;
-        
+            stockCode: row.code,
+            chineseName: codeNameMap[row.code], // 根据 code 映射中文名称
+            close: row.close
+        }));
+        return result;
+
     }
-    
+
 
 }
 module.exports = StockModel;
